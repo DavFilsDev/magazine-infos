@@ -22,6 +22,7 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink,
+        foregroundColor: Colors.white,
         leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
         title: const Text('Gestion des rédacteurs'),
         centerTitle: true,
@@ -52,6 +53,9 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
                 backgroundColor: Colors.pink,
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 44),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
             ),
             const SizedBox(height: 12),
