@@ -64,6 +64,12 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _chargerRedacteurs();
+  }
+
   Future<void> _chargerRedacteurs() async {
     final data = await _dbManager.getAllRedacteurs();
     setState(() {
