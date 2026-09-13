@@ -53,6 +53,10 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
                     child: ListTile(
                       title: Text('${r.nom} ${r.prenom}'),
                       subtitle: Text(r.email),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () => _modifierRedacteur(r),
+                      ),
                     ),
                   );
                 },
@@ -93,5 +97,55 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
     _prenomController.clear();
     _emailController.clear();
     await _chargerRedacteurs();
+  }
+
+  Future<void> _modifierRedacteur(Redacteur r) async {
+    final nomCtrl = TextEditingController(text: r.nom);
+    final prenomCtrl = TextEditingController(text: r.prenom);
+    final emailCtrl = TextEditingController(text: r.email);
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Modifier Rédacteur'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nomCtrl,
+              decoration: const InputDecoration(labelText: 'Nouveau Nom'),
+            ),
+            TextField(
+              controller: prenomCtrl,
+              decoration: const InputDecoration(labelText: 'Nouveau Prénom'),
+            ),
+            TextField(
+              controller: emailCtrl,
+              decoration: const InputDecoration(labelText: 'Nouvel Email'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final updated = Redacteur(
+                id: r.id,
+                nom: nomCtrl.text,
+                prenom: prenomCtrl.text,
+                email: emailCtrl.text,
+              );
+              await _dbManager.updateRedacteur(updated);
+              await _chargerRedacteurs();
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('Enregistrer'),
+          ),
+        ],
+      ),
+    );
   }
 }
