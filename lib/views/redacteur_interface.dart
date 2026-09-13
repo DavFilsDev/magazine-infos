@@ -20,7 +20,13 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Gestion des rédacteurs')),
+      appBar: AppBar(
+        backgroundColor: Colors.pink,
+        leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+        title: const Text('Gestion des rédacteurs'),
+        centerTitle: true,
+        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -42,6 +48,11 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
               onPressed: _ajouterRedacteur,
               icon: const Icon(Icons.add),
               label: const Text('Ajouter un Rédacteur'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pink,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 44),
+              ),
             ),
             const SizedBox(height: 12),
             Expanded(
