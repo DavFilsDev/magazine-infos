@@ -53,9 +53,18 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
                     child: ListTile(
                       title: Text('${r.nom} ${r.prenom}'),
                       subtitle: Text(r.email),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () => _modifierRedacteur(r),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _supprimerRedacteur(r),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () => _modifierRedacteur(r),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -143,6 +152,30 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
               if (context.mounted) Navigator.pop(context);
             },
             child: const Text('Enregistrer'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _supprimerRedacteur(Redacteur r) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmer la suppression'),
+        content: Text('Voulez-vous vraiment supprimer ${r.nom} ${r.prenom} ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await _dbManager.deleteRedacteur(r.id!);
+              await _chargerRedacteurs();
+              if (context.mounted) Navigator.pop(context);
+            },
+            child: const Text('Supprimer'),
           ),
         ],
       ),
