@@ -153,6 +153,7 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   Future<void> _chargerRedacteurs() async {
     final data = await _dbManager.getAllRedacteurs();
     data.sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
+    if (!mounted) return;
     setState(() {
       _tousLesRedacteurs = data;
       _redacteurs = data;
