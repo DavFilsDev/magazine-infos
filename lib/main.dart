@@ -13,6 +13,7 @@ class MonApplication extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Gestion des rédacteurs',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.pink),
       home: const RedacteurInterface(),
     );
