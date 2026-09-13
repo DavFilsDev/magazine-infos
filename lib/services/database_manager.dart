@@ -55,4 +55,9 @@ class DatabaseManager {
     final db = await database;
     return await db.delete('redacteurs', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<void> deleteAllRedacteurs() async {
+    final db = await database;
+    await db.delete('redacteurs');
+  }
 }

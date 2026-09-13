@@ -26,7 +26,12 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
       appBar: AppBar(
         backgroundColor: Colors.pink,
         foregroundColor: Colors.white,
-        leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
         title: _rechercheActive
             ? TextField(
                 controller: _rechercheController,
@@ -113,6 +118,25 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
                   );
                 },
               ),
+            ),
+          ],
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.pink),
+              child: Text(
+                'Menu',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_sweep),
+              title: const Text('Vider tous les rédacteurs'),
+              onTap: _viderTousLesRedacteurs,
             ),
           ],
         ),
@@ -259,6 +283,34 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   void _afficherMessage(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+    );
+  }
+
+  Future<void> _viderTousLesRedacteurs() async {
+    Navigator.pop(context); // ferme le Drawer
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Vider la liste'),
+        content: const Text(
+          'Voulez-vous vraiment supprimer tous les rédacteurs ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await _dbManager.deleteAllRedacteurs();
+              await _chargerRedacteurs();
+              if (context.mounted) Navigator.pop(context);
+              _afficherMessage('Liste vidée');
+            },
+            child: const Text('Vider'),
+          ),
+        ],
+      ),
     );
   }
 }
