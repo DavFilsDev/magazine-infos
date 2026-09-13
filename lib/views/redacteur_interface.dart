@@ -109,8 +109,12 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   Future<void> _ajouterRedacteur() async {
     if (_nomController.text.isEmpty ||
         _prenomController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        !_emailValide(_emailController.text)) {
+        _emailController.text.isEmpty) {
+      _afficherMessage('Veuillez remplir tous les champs');
+      return;
+    }
+    if (!_emailValide(_emailController.text)) {
+      _afficherMessage('Adresse e-mail invalide');
       return;
     }
     final r = Redacteur.sansId(
@@ -123,6 +127,7 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
     _prenomController.clear();
     _emailController.clear();
     await _chargerRedacteurs();
+    _afficherMessage('Rédacteur ajouté');
   }
 
   Future<void> _modifierRedacteur(Redacteur r) async {
@@ -158,7 +163,10 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
           ),
           TextButton(
             onPressed: () async {
-              if (!_emailValide(emailCtrl.text)) return;
+              if (!_emailValide(emailCtrl.text)) {
+                _afficherMessage('Adresse e-mail invalide');
+                return;
+              }
               final updated = Redacteur(
                 id: r.id,
                 nom: nomCtrl.text,
@@ -168,6 +176,7 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
               await _dbManager.updateRedacteur(updated);
               await _chargerRedacteurs();
               if (context.mounted) Navigator.pop(context);
+              _afficherMessage('Rédacteur modifié');
             },
             child: const Text('Enregistrer'),
           ),
@@ -192,6 +201,7 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
               await _dbManager.deleteRedacteur(r.id!);
               await _chargerRedacteurs();
               if (context.mounted) Navigator.pop(context);
+              _afficherMessage('Rédacteur supprimé');
             },
             child: const Text('Supprimer'),
           ),
@@ -203,5 +213,11 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   bool _emailValide(String email) {
     final regex = RegExp(r'^[\w.\-]+@[\w\-]+\.[a-zA-Z]{2,}$');
     return regex.hasMatch(email);
+  }
+
+  void _afficherMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), duration: const Duration(seconds: 2)),
+    );
   }
 }
