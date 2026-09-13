@@ -1,6 +1,8 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import '../modele/redacteur.dart';
+
 class DatabaseManager {
   static Database? _db;
 
@@ -26,5 +28,31 @@ class DatabaseManager {
         ''');
       },
     );
+  }
+
+  Future<List<Redacteur>> getAllRedacteurs() async {
+    final db = await database;
+    final maps = await db.query('redacteurs');
+    return maps.map((m) => Redacteur.fromMap(m)).toList();
+  }
+
+  Future<int> insertRedacteur(Redacteur r) async {
+    final db = await database;
+    return await db.insert('redacteurs', r.toMap());
+  }
+
+  Future<int> updateRedacteur(Redacteur r) async {
+    final db = await database;
+    return await db.update(
+      'redacteurs',
+      r.toMap(),
+      where: 'id = ?',
+      whereArgs: [r.id],
+    );
+  }
+
+  Future<int> deleteRedacteur(int id) async {
+    final db = await database;
+    return await db.delete('redacteurs', where: 'id = ?', whereArgs: [id]);
   }
 }
