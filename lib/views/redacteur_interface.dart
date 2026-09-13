@@ -109,7 +109,8 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   Future<void> _ajouterRedacteur() async {
     if (_nomController.text.isEmpty ||
         _prenomController.text.isEmpty ||
-        _emailController.text.isEmpty) {
+        _emailController.text.isEmpty ||
+        !_emailValide(_emailController.text)) {
       return;
     }
     final r = Redacteur.sansId(
@@ -157,6 +158,7 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
           ),
           TextButton(
             onPressed: () async {
+              if (!_emailValide(emailCtrl.text)) return;
               final updated = Redacteur(
                 id: r.id,
                 nom: nomCtrl.text,
@@ -196,5 +198,10 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
         ],
       ),
     );
+  }
+
+  bool _emailValide(String email) {
+    final regex = RegExp(r'^[\w.\-]+@[\w\-]+\.[a-zA-Z]{2,}$');
+    return regex.hasMatch(email);
   }
 }
