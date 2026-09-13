@@ -16,6 +16,9 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
   final TextEditingController _emailController = TextEditingController();
   final DatabaseManager _dbManager = DatabaseManager();
   List<Redacteur> _redacteurs = [];
+  bool _rechercheActive = false;
+  List<Redacteur> _tousLesRedacteurs = [];
+  final TextEditingController _rechercheController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +27,34 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
         backgroundColor: Colors.pink,
         foregroundColor: Colors.white,
         leading: IconButton(icon: const Icon(Icons.menu), onPressed: () {}),
-        title: const Text('Gestion des rédacteurs'),
+        title: _rechercheActive
+            ? TextField(
+                controller: _rechercheController,
+                autofocus: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  hintText: 'Rechercher...',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                ),
+                onChanged: _filtrerRedacteurs,
+              )
+            : const Text('Gestion des rédacteurs'),
         centerTitle: true,
-        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
+        actions: [
+          IconButton(
+            icon: Icon(_rechercheActive ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _rechercheActive = !_rechercheActive;
+                if (!_rechercheActive) {
+                  _rechercheController.clear();
+                  _redacteurs = _tousLesRedacteurs;
+                }
+              });
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -102,7 +130,20 @@ class _RedacteurInterfaceState extends State<RedacteurInterface> {
     final data = await _dbManager.getAllRedacteurs();
     data.sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
     setState(() {
+      _tousLesRedacteurs = data;
       _redacteurs = data;
+    });
+  }
+
+  void _filtrerRedacteurs(String query) {
+    setState(() {
+      _redacteurs = _tousLesRedacteurs
+          .where(
+            (r) =>
+                r.nom.toLowerCase().contains(query.toLowerCase()) ||
+                r.prenom.toLowerCase().contains(query.toLowerCase()),
+          )
+          .toList();
     });
   }
 
